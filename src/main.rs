@@ -1,17 +1,37 @@
+use clap::Parser;
+use std::path::PathBuf;
+use tracing::{error, Level};
+use tracing_subscriber::FmtSubscriber;
+
 use mergepdf::pdf::merge::merge_multiple_pdfs;
 
-fn main() {
-    let pdfs = [
-        "assets/samples/pdf_text_1.pdf",
-        "assets/samples/pdf_text_image_1.pdf",
-        "assets/samples/pdf_text_table_1.pdf",
-        "assets/samples/pdf_text_chart_1.pdf",
-    ];
+#[derive(Parser, Debug)]
+#[command(author, version, about = "A professional tool for merging PDF files")]
+struct Args {
+    /// Input PDF files to merge (requires at least one)
+    #[arg(required = true, num_args = 1..)]
+    inputs: Vec<PathBuf>,
 
-    let output = "output/merged_book.pdf";
+    /// Output PDF file path
+    #[arg(short, long, default_value = "merged_output.pdf")]
+    output: PathBuf,
+}
 
-    match merge_multiple_pdfs(&pdfs, output) {
-        Ok(_) => println!("Merged into {}", output),
-        Err(e) => eprintln!("Merge failed: {:?}", e),
+fn main() -> anyhow::Result<()> {
+    // Initialize professional logging (replaces println!)
+    let subscriber = FmtSubscriber::builder()
+        .with_max_level(Level::INFO)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber)?;
+
+    // Parse command line arguments
+    let args = Args::parse();
+
+    // Execute core logic and handle errors gracefully
+    if let Err(e) = merge_multiple_pdfs(&args.inputs, args.output) {
+        error!("Merge failed: {}", e);
+        std::process::exit(1);
     }
+
+    Ok(())
 }
