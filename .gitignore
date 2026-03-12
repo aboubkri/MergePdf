@@ -1,2 +1,19 @@
+# Rust build artifacts
 /target
-/output
+
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# App specific outputs
+/output/*.pdf
+/assets/samples/output.pdf
+
+# Local OS files
+.DS_Store

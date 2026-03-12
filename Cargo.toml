@@ -3,6 +3,10 @@ name = "mergepdf"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "mergepdf"
+crate-type = ["cdylib", "rlib"] # cdylib for Python, rlib for CLI
+
 [dependencies]
 lopdf = "0.38.0"
 clap = { version = "4.4", features = ["derive"] }
@@ -10,3 +14,4 @@ thiserror = "1.0"
 anyhow = "1.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+pyo3 = { version = "0.20", features = ["extension-module"] }
