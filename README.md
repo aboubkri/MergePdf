@@ -8,20 +8,28 @@ A simple, transparent, and 100% local tool for merging PDF files. Instead of upl
 * **Cross-Platform:** Works on Windows, macOS, and Linux.
 * **Transparent:** Open-source code you can inspect and run locally.
     
-        
-## 🚀 One-Click Setup
+## 🛠️ Prerequisites
 
-### For Windows Users
-1. Download this folder.
-2. Double-click the `run.bat` file.
-3. If it's your first time, it will install the necessary tools. You may need to restart the script once after the installation finishes.
+You must have **Python** and **Rust** installed on your system before running the scripts.
 
-### For Linux & macOS Users
-1. Open your terminal in this folder.
-2. Run the following command:
-   ```bash
-   chmod +x run.sh && ./run.sh
+### 1. Python (3.10+)
+- **Windows:** [Download from Python.org](https://www.python.org/downloads/windows/).  
+  ⚠️ **Important:** Check **"Add Python to PATH"** during installation.
+- **macOS:** `brew install python`
+- **Linux:** `sudo apt install python3 python3-venv` (Ubuntu/Debian)
 
+### 2. Rust Toolchain (Cargo)
+- **All Platforms:** Install via [rustup.rs](https://rustup.rs/) by following the on-screen instructions.
+
+## 🚀 How to Run
+
+### 🪟 Windows
+Double-click `run.bat`. The script handles environment setup and compilation automatically.
+
+### 🍎 macOS / 🐧 Linux
+1. Open your terminal in the project folder.
+2. Make the script executable: `chmod +x run.sh`
+3. Run it: `./run.sh`        
 
 ## 🏗️ Project Architecture
 The app is built as a Hybrid Rust/Python Library:
@@ -31,20 +39,3 @@ The app is built as a Hybrid Rust/Python Library:
 - The Bridge (src/lib.rs): Uses PyO3 to expose high-performance Rust functions to Python.
 
 - Frontend (src/ui.py): A Python-based GUI using TkinterDnD for drag-and-drop support.
-
-## 🔍 Reproducible Testing via Docker
-To ensure the automated setup scripts are robust, a Dockerfile.test is provided. This creates a volatile, "headless" instance of Ubuntu 22.04 LTS to simulate a clean-slate environment with no pre-installed development tools.
-
-To execute the Ubuntu-based integration test::
-
-Ensure Docker is installed and running.
-
-Run:
-
-```Bash
-docker build -t pdf-merger-test -f Dockerfile.test .
-docker run -it pdf-merger-test
-```
-
-
-Note: The containerized test is designed to validate the installation and build pipeline. Because Docker containers are headless by default, the script will exit with a _tkinter.TclError after a successful build. This confirms the application reached the final execution stage.
