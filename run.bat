@@ -1,30 +1,46 @@
-@echo off
-echo --- Starting PDF-Merger Auto-Setup ---
+echo --- PDF-Merger: Windows Setup ---
 
-:: Check/Install Python
-where python >nul 2>nul
-if %errorlevel% neq 0 (
-    echo Installing Python via Winget...
-    winget install -e --id Python.Python.3
-    echo Please restart this script after Python finishes installing.
-    pause && exit
+:: 1. Check Python
+python --version >nul 2>&1
+if errorlevel 1 goto :no_python
+
+:: 2. Check Rust
+cargo --version >nul 2>&1
+if errorlevel 1 goto :no_rust
+
+:: 3. Setup Virtual Environment
+if not exist .venv (
+    echo [SETUP] Creating virtual environment...
+    python -m venv .venv
 )
 
-:: Check/Install Rust
-where cargo >nul 2>nul
-if %errorlevel% neq 0 (
-    echo Installing Rust (rustup)...
-    winget install -e --id Rustlang.Rustup
-    echo Please restart this script after Rust finishes installing.
-    pause && exit
-)
+:: 4. Build and Run
+echo [BUILD] Installing dependencies...
+call .venv\Scripts\activate.bat
 
-:: Setup and Run
-if not exist .venv ( python -m venv .venv )
-call .venv\Scripts\activate
-pip install maturin
+python -m pip install --upgrade pip maturin
+
+echo [BUILD] Compiling Rust engine...
+:: FIX: Suppress version check for Python 3.14/experimental versions
+set PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 maturin develop --release
-pip install -r requirements.txt
 
+echo [BUILD] Installing UI dependencies...
+python -m pip install -r requirements.txt
+
+echo --- Launching Application ---
 python src/ui.py
 pause
+goto :eof
+
+:no_python
+echo [ERROR] Python not found.
+echo Please install Python 3.12 from python.org and check "Add to PATH".
+pause
+exit
+
+:no_rust
+echo [ERROR] Rust (cargo) not found.
+echo Please install it from https://rustup.rs/
+pause
+exit
